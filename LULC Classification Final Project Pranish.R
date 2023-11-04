@@ -15,7 +15,6 @@ library(viridis)
 library(rasterVis)
 library(randomForest)
 library(leaflet.extras)
-library(knitr)
 
 #Load the in-situ data (shapefile)
 insitu_shp <- st_read("LULC_Crop-Types_In-SituData2021_USP/LULC_Crop-Types_In-SituData2021_USP.shp")
@@ -76,6 +75,12 @@ target_districts <- c("Dhanusha", "Mahottari", "Sarlahi")
 # Filter the shapefile to include only the target districts
 filtered_districts <- district_shp[district_shp$DISTRICT %in% target_districts, ]
 
+# Define a custom color palette for the specific class types
+color_palette <- colorFactor(
+  palette = c("lightgreen", "yellow", "darkgreen", "cyan", "orange","purple"),  # Define colors for each class type
+  domain = c("Sugarcane", "PaddyRice", "Orchid","Bamboo", "OtherCrop", "Mixed_Area")  # Define class types
+)
+
 # Create a leaflet map with OpenStreetMap (OSM) as the base map
 leaflet() %>%
   addProviderTiles(providers$OpenStreetMap) %>%
@@ -86,8 +91,6 @@ leaflet() %>%
                    popup = ~LU_CT,
                    color = ~color_palette(LU_CT),
                    radius = 1)
-
-
 
 
 
