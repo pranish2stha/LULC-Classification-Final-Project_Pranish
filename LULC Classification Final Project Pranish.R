@@ -1,5 +1,5 @@
 setwd("D:/Geoinfomatics Study Materials/Second Semster/Geo_Science/RWorking/Ps Project")
-install.packages("knitr")
+
 
 
 # Load the required R packages
