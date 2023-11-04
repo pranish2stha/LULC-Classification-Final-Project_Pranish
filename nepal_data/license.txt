@@ -1,0 +1,9 @@
+They are downloaded from HERMES database (https://download.hermes.com.np)
+They can be used for non-commercial purposes only.
+It is not allowed to redistribute, or use them for commercial purposes, without prior consent. 
+See the website (https://download.hermes.com.np) for more information.
+
+These data were originally extracted from the NGIID database. 
+Kalapani Region boundary is NOT officially. 
+
+Hermes GIS team digitize as per boundary defined by Government of Nepal.
