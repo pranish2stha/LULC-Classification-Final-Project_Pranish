@@ -15,7 +15,8 @@ library(viridis)
 library(rasterVis)
 library(randomForest)
 library(leaflet.extras)
-
+library(knitr)
+library(tidyr)
 #Load the in-situ data (shapefile)
 insitu_shp <- st_read("LULC_Crop-Types_In-SituData2021_USP/LULC_Crop-Types_In-SituData2021_USP.shp")
 # View the first few rows of the attribute data
@@ -90,7 +91,8 @@ leaflet() %>%
                    lat = ~st_coordinates(insitu_shp$geometry)[, 2],
                    popup = ~LU_CT,
                    color = ~color_palette(LU_CT),
-                   radius = 1)
+                   radius = 1)%>%
+  setView(lng = 85.793, lat = 26.953, zoom = 8.8)
 
 
 
@@ -216,7 +218,7 @@ colnames(confusion_matrix_df) <- c("Predicted", "Actual", "Frequency")
 heatmap_plot <- ggplot(confusion_matrix_df, aes(Actual, Predicted, fill = Frequency)) +
   geom_tile() +
   geom_text(aes(label = Frequency), vjust = 1, size = 4) +
-  scale_fill_gradient(low = "orange", high = "red") +  # Define color palette
+  scale_fill_gradient(low = "pink", high = "red") +  # Define color palette
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels
   labs(title = "Confusion Matrix Heatmap", x = "Actual", y = "Predicted")
@@ -228,9 +230,6 @@ print(heatmap_plot)
 accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
 cat("Accuracy: ", round(accuracy, 2), "\n")
 
-
-# Define  class names
-class_names <- c("Bamboo", "Orchid", "PaddyRice", "Sugarcane","OtherCrop","Mixed_Area")
 
 # Initialize vectors to store precision, recall, and F1 values
 precision_values <- numeric(length(class_names))
@@ -247,7 +246,7 @@ for (i in 1:length(class_names)) {
   recall <- TP / (TP + FN)
   f1_value <- 2 * (precision * recall) / (precision + recall)
   
- 
+  
   
   # Store values in respective vectors
   precision_values[i] <- precision
@@ -266,6 +265,21 @@ results_df <- data.frame(
 # Use kable to format the results as a table
 kable(results_df, caption = "Precision, Recall, and F1-Score for Each Class")
 
+# Transform the data for a grouped bar chart
+results_long <- results_df %>%
+  pivot_longer(cols = c(Precision, Recall, F1_Score), names_to = "Metric", values_to = "Value")
+
+# Create a grouped bar chart for Precision, Recall, and F1-Score
+grouped_bar <- ggplot(results_long, aes(Class, Value, fill = Metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Performance Metrics for Each Class", x = "Class", y = "Value") +
+  scale_fill_manual(values = c("Precision" = "blue", "Recall" = "green", "F1_Score" = "red")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+# Display the grouped bar chart
+print(grouped_bar)
+
 # Initialize vectors to store producer accuracy (PA) and user accuracy (UA)
 PA_values <- numeric(length(class_names))
 UA_values <- numeric(length(class_names))
@@ -280,7 +294,7 @@ for (i in 1:length(class_names)) {
   # Calculate User Accuracy (UA)
   UA <- confusion_matrix[class_name, class_name] / sum(confusion_matrix[, class_name])
   
-
+  
   
   # Store values in respective vectors
   PA_values[i] <- PA
@@ -297,10 +311,21 @@ PA_UA_df <- data.frame(
 # Use kable to format the results as a table
 kable(PA_UA_df, caption = "Producer and User Accuracy for Each Class")
 
-producer_accuracy_df <- data.frame(
-  Class = class_names,
-  Producer_Accuracy = round(PA_values, 2)
-)
+# Transform the data for a grouped bar chart for PA and UA
+PA_UA_long <- PA_UA_df %>%
+  pivot_longer(cols = c(Producer_Accuracy, User_Accuracy), names_to = "Metric", values_to = "Value")
+
+# Create a grouped bar chart for PA and UA
+grouped_bar_PA_UA <- ggplot(PA_UA_long, aes(Class, Value, fill = Metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Producer and User Accuracy for Each Class", x = "Class", y = "Value") +
+  scale_fill_manual(values = c("Producer_Accuracy" = "orange", "User_Accuracy" = "maroon")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+# Display the grouped bar chart for PA and UA
+print(grouped_bar_PA_UA)
+
 
 
 
