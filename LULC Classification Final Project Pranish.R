@@ -1,4 +1,4 @@
-setwd("D:/Geoinfomatics Study Materials/Second Semster/Geo_Science/RWorking/Ps Project")
+setwd("D:/Geoinfomatics Study Materials/Second Semster/Geo_Science/RWorking/Pranish Final Project - LULC Classficiation")
 
 
 
